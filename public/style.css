@@ -1,0 +1,43 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    background: #efe9cc;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+header {
+    height: 70px;
+}
+
+footer {
+    height: 80px;
+    align-self: center;
+}
+
+.welcome {
+    align-self: center;
+}
+
+.registration {
+    align-self: center;
+}
+
+#canvas-body {
+    border: 1px dotted black;
+}
+
+#canvas-body:hover {
+    cursor: crosshair;
+}
+
+/* ##############################SIGNERS PAGE#################### */
+
+.signatures {
+    align-self: center;
+}
