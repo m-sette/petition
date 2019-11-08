@@ -13,3 +13,19 @@ module.exports.addCity = function(city, population) {
         population
     ]);
 };
+
+//Add modue here to export data to db.
+module.exports.getSig = function(id) {
+    return db.query("SELECT * FROM signatures WHERE id = $1", [id]);
+};
+
+module.exports.getLastSig = function() {
+    return db.query("SELECT signature FROM signatures");
+};
+
+module.exports.addSigners = function(firstname, lastname, signature) {
+    return db.query(
+        "INSERT INTO signatures (firstname, lastname, signature) VALUES ($1, $2, $3) RETURNING id",
+        [firstname, lastname, signature]
+    );
+};

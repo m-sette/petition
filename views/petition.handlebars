@@ -3,13 +3,14 @@
     <h1>Welcome to my petition page</h1>
 </div>
 
-<form class="registration"  method="post">
+<form class="registration"  method="POST">
     First name:<br>
     <input type="text" name="firstname"><br>
     Last name:<br>
     <input type="text" name="lastname"><br>
     Sign Here<br>
-    <input type="hidden" name="signature"><br>
+    <input type="hidden" name="signature" id="sig"><br>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <canvas id="canvas-body" width="400" height="100"></canvas><br>
      <button type="submit" name="submit">Submit</button>
 </form>

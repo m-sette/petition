@@ -20,6 +20,11 @@ footer {
     align-self: center;
 }
 
+img {
+    height: 100px;
+    width: 200px;
+}
+
 .welcome {
     align-self: center;
 }
