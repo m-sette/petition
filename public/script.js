@@ -3,21 +3,24 @@
     let x, y;
     let drawing = false;
     const c = canvas[0].getContext("2d");
-    //console.log(c);
     const rect = canvas[0].getBoundingClientRect();
-
     const sign = $("#sig");
-    console.log("sigh ", sign.input);
-    //console.log(rect);
+    const submit = $("#submit");
+    const form = $(".registration");
 
-    // canvas.on("click", e => {
-    //     console.log(e);
-    // });
+    submit.on("click", e => {
+        for (let i = 0; i <= 2; i++) {
+            if (!form[0][i].value) {
+                $("#error").css("visibility", "visible");
+                e.preventDefault();
+            }
+        }
+    });
+
     canvas.on("mousedown", e => {
         drawing = true;
         x = e.clientX - rect.left;
         y = e.clientY - rect.top;
-        // console.log(y, x);
     });
 
     canvas.on("mousemove", e => {
@@ -28,12 +31,11 @@
         }
     });
 
-    canvas.on("mouseup", e => {
+    canvas.on("mouseup", () => {
         drawing = false;
-        //console.log(e.toDataUrl);
         const dataURL = canvas[0].toDataURL();
         sign.val(dataURL);
-        console.log(sign.val());
+        //console.log(sign.val());
     });
 
     function draw(c, x1, y1, x2, y2) {

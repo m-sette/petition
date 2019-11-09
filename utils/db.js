@@ -14,13 +14,12 @@ module.exports.addCity = function(city, population) {
     ]);
 };
 
-//Add modue here to export data to db.
-module.exports.getSig = function(id) {
+module.exports.getLastSig = function(id) {
     return db.query("SELECT * FROM signatures WHERE id = $1", [id]);
 };
 
-module.exports.getLastSig = function() {
-    return db.query("SELECT signature FROM signatures");
+module.exports.getSigNames = function() {
+    return db.query("SELECT firstname, lastname FROM signatures");
 };
 
 module.exports.addSigners = function(firstname, lastname, signature) {

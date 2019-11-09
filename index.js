@@ -23,13 +23,12 @@ app.use(
 app.use(csurf());
 
 app.use(function(req, res, next) {
-    // res.setHeaders("x-frame-options", "DENY");
+    res.set("X-Frame-Options", "deny");
     res.locals.csrfToken = req.csrfToken();
     next();
 });
 
 app.get("/", (req, res) => {
-    // req.session.test = ";)";
     console.log(req.session.signatureId);
     res.redirect("/petition");
 });
@@ -58,34 +57,32 @@ app.post("/petition", (req, res) => {
 });
 
 app.get("/petition/signed", (req, res) => {
-    let sigNum = 0;
-    db.getSig(req.session.signatureId)
+    db.getLastSig(req.session.signatureId)
         .then(({ rows }) => {
-            //console.log("Rows: ", rows);
-            // console.log("table size: ", rows.length);
-            sigNum = rows.length;
             res.render("signed", {
                 layout: "main",
                 title: "signed",
-                helpers: {
-                    sigNum() {
-                        return sigNum;
-                    }
-                },
+                sigNum: req.session.signatureId,
                 data: rows[0].signature
             });
         })
         .catch(err => {
             console.log(err);
         });
-    console.log(req.session.signatureId);
 });
 
 app.get("/petition/signers", (req, res) => {
-    res.render("signers", {
-        layout: "main",
-        title: "signers"
-    });
+    db.getSigNames()
+        .then(({ rows }) => {
+            res.render("signers", {
+                layout: "main",
+                title: "signers",
+                names: rows
+            });
+        })
+        .catch(err => {
+            console.log("Error on signers page: ", err);
+        });
 });
 // app.post("/add-city", (req, res) => {
 //     db.addCity("Sarajevo", 70000)

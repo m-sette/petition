@@ -1,16 +1,16 @@
-
 <div class="welcome">
     <h1>Welcome to my petition page</h1>
 </div>
 
 <form class="registration"  method="POST">
+    <p id="error">Something went wrong. Please try again</p><br>
     First name:<br>
-    <input type="text" name="firstname"><br>
+    <input type="text" name="firstname" required><br>
     Last name:<br>
-    <input type="text" name="lastname"><br>
+    <input type="text" name="lastname" required><br>
     Sign Here<br>
-    <input type="hidden" name="signature" id="sig"><br>
+    <input type="hidden" name="signature" id="sig" required><br>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <canvas id="canvas-body" width="400" height="100"></canvas><br>
-     <button type="submit" name="submit">Submit</button>
+     <button type="submit" name="submit" id="submit">Submit</button>
 </form>

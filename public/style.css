@@ -33,6 +33,11 @@ img {
     align-self: center;
 }
 
+#error {
+    visibility: hidden;
+    color: red;
+}
+
 #canvas-body {
     border: 1px dotted black;
 }
