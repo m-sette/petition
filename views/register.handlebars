@@ -1,0 +1,18 @@
+<div class="welcome">
+    <h1>Welcome to my petition page</h1>
+    <h2>This is the registration Page</h2>
+</div>
+
+<form class="registration" method="POST"><br>
+    <p id="error">Something went wrong. Please try again</p><br>
+    First Name:<br>
+    <input type="text" name="firstname" required><br>
+    Last Name <br>
+    <input type="text" name="lastname" required><br>
+    E-mail address <br>
+    <input type="email" name="email" required> <br>
+    Password <br>
+    <input type="password" name="password" required> <br>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" name="sign-up" class="submit">SIGN UP</button>
+</form>

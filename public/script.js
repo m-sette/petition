@@ -7,15 +7,17 @@
     const sign = $("#sig");
     const submit = $("#submit");
     const form = $(".registration");
+    console.log(form);
 
-    submit.on("click", e => {
-        for (let i = 0; i <= 2; i++) {
-            if (!form[0][i].value) {
-                $("#error").css("visibility", "visible");
-                e.preventDefault();
-            }
-        }
-    });
+    // submit.on("click", e => {
+    //     console.log(e);
+    //     for (let i = 0; i <= 2; i++) {
+    //         if (!form[0][i].value) {
+    //             $("#error").css("visibility", "visible");
+    //             e.preventDefault();
+    //         }
+    //     }
+    // });
 
     canvas.on("mousedown", e => {
         drawing = true;

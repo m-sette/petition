@@ -3,7 +3,7 @@ const app = express();
 const db = require("./utils/db");
 const hb = require("express-handlebars");
 const csurf = require("csurf");
-
+const { hash, compare } = require("./utils/bc");
 const cookieSession = require("cookie-session");
 app.use(express.urlencoded({ extended: false }));
 
@@ -29,23 +29,26 @@ app.use(function(req, res, next) {
 });
 
 app.get("/", (req, res) => {
-    console.log(req.session.signatureId);
+    console.log(req.session.user);
     res.redirect("/petition");
 });
 
 app.get("/petition", (req, res) => {
-    res.render("petition", {
-        layout: "main",
-        title: "Petition"
-    });
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else {
+        res.render("petition", {
+            layout: "main",
+            title: "Petition"
+        });
+    }
 });
 
 app.post("/petition", (req, res) => {
-    let firstName = req.body.firstname;
-    let lasteName = req.body.lastname;
     let signature = req.body.signature;
+    let userid = req.session.signatureId;
 
-    db.addSigners(firstName, lasteName, signature)
+    db.addSigners(signature, userid)
         .then(({ rows }) => {
             req.session.signatureId = rows[0].id;
             console.log("success");
@@ -56,14 +59,67 @@ app.post("/petition", (req, res) => {
         });
 });
 
-app.get("/petition/signed", (req, res) => {
-    db.getLastSig(req.session.signatureId)
+app.get("/register", (req, res) => {
+    res.render("register", {
+        layout: "main",
+        title: "registration"
+    });
+});
+
+app.post("/register", (req, res) => {
+    let firstname = req.body.firstname;
+    let lastname = req.body.lastname;
+    let email = req.body.email;
+    let pw = req.body.password;
+
+    hash(pw).then(hashedpwd => {
+        db.addUser(firstname, lastname, email, hashedpwd)
+            .then(({ rows }) => {
+                req.session.user = {
+                    name: firstname,
+                    last: lastname,
+                    signatureId: rows[0].id
+                };
+                console.log("success");
+                console.log(req.session.user);
+                res.redirect("/petition"); //petition page
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    });
+    // if fails, render a template with an error message.
+});
+
+app.get("/login", (req, res) => {
+    res.render("login", {
+        layout: "main",
+        title: "login"
+    });
+});
+
+app.post("/login", (req, res) => {
+    let email = req.body.email;
+    let pw = req.body.password;
+
+    db.getUser(email)
         .then(({ rows }) => {
-            res.render("signed", {
-                layout: "main",
-                title: "signed",
-                sigNum: req.session.signatureId,
-                data: rows[0].signature
+            compare(pw, rows[0].password).then(val => {
+                req.session.user.signatureId = rows[0].id;
+                if (val) {
+                    db.getUserId(req.session.user.signatureId)
+                        .then(({ rows }) => {
+                            console.log(rows.length);
+                            if (rows.length > 0) {
+                                res.redirect("/petition/signed");
+                            } else {
+                                res.redirect("/petition");
+                            }
+                        })
+                        .catch(err => console.log("Getting the user id", err));
+                } else {
+                    res.redirect("/login");
+                }
             });
         })
         .catch(err => {
@@ -71,18 +127,41 @@ app.get("/petition/signed", (req, res) => {
         });
 });
 
-app.get("/petition/signers", (req, res) => {
-    db.getSigNames()
-        .then(({ rows }) => {
-            res.render("signers", {
-                layout: "main",
-                title: "signers",
-                names: rows
+app.get("/petition/signed", (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else {
+        db.getLastSig(req.session.signatureId)
+            .then(({ rows }) => {
+                res.render("signed", {
+                    layout: "main",
+                    title: "signed",
+                    sigNum: req.session.signatureId,
+                    data: rows[0].signature
+                });
+            })
+            .catch(err => {
+                console.log(err);
             });
-        })
-        .catch(err => {
-            console.log("Error on signers page: ", err);
-        });
+    }
+});
+
+app.get("/petition/signers", (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else {
+        db.getSigNames()
+            .then(({ rows }) => {
+                res.render("signers", {
+                    layout: "main",
+                    title: "signers",
+                    names: rows
+                });
+            })
+            .catch(err => {
+                console.log("Error on signers page: ", err);
+            });
+    }
 });
 // app.post("/add-city", (req, res) => {
 //     db.addCity("Sarajevo", 70000)

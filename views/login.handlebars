@@ -1,0 +1,14 @@
+<div class="welcome">
+    <h1>Welcome to my petition page</h1>
+    <h2>This is the login Page</h2>
+</div>
+
+<form class="registration" method="post">
+    <p id="error">Something went wrong. Please try again</p><br>
+    E-mail <br>
+    <input type="email" name="email" required> <br>
+    Password <br>
+    <input type="password" name="password" required> <br>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" name="button" id="submit">LOG IN</button>
+</form>
