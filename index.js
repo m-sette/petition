@@ -46,11 +46,12 @@ app.get("/petition", (req, res) => {
 
 app.post("/petition", (req, res) => {
     let signature = req.body.signature;
-    let userid = req.session.signatureId;
+    let userid = req.session.user.userId;
+    console.log(userid);
 
     db.addSigners(signature, userid)
         .then(({ rows }) => {
-            req.session.signatureId = rows[0].id;
+            req.session.user.signatureId = rows[0].id;
             console.log("success");
             res.redirect("/petition/signed");
         })
@@ -78,14 +79,16 @@ app.post("/register", (req, res) => {
                 req.session.user = {
                     name: firstname,
                     last: lastname,
-                    signatureId: rows[0].id
+                    userId: rows[0].id
                 };
                 console.log("success");
                 console.log(req.session.user);
                 res.redirect("/petition"); //petition page
             })
             .catch(err => {
-                console.log(err);
+                console.log("Error on the registar POST", err);
+                res.send(`<p>Error ${err.detail}</p>`);
+                res.redirect("/register");
             });
     });
     // if fails, render a template with an error message.
@@ -98,6 +101,11 @@ app.get("/login", (req, res) => {
     });
 });
 
+app.get("/logout", (req, res) => {
+    req.session.user = null;
+    res.redirect("/register");
+});
+
 app.post("/login", (req, res) => {
     let email = req.body.email;
     let pw = req.body.password;
@@ -105,12 +113,18 @@ app.post("/login", (req, res) => {
     db.getUser(email)
         .then(({ rows }) => {
             compare(pw, rows[0].password).then(val => {
-                req.session.user.signatureId = rows[0].id;
+                // req.session.user.userId = rows[0].id;
                 if (val) {
-                    db.getUserId(req.session.user.signatureId)
+                    req.session.user = {
+                        name: rows[0].firstname,
+                        last: rows[0].lastname,
+                        userId: rows[0].id
+                    };
+                    db.getUserId(req.session.user.userId)
                         .then(({ rows }) => {
                             console.log(rows.length);
                             if (rows.length > 0) {
+                                req.session.user.signatureId = rows[0].id;
                                 res.redirect("/petition/signed");
                             } else {
                                 res.redirect("/petition");
@@ -123,7 +137,7 @@ app.post("/login", (req, res) => {
             });
         })
         .catch(err => {
-            console.log(err);
+            console.log("Error on the login page: ", err);
         });
 });
 
@@ -131,17 +145,17 @@ app.get("/petition/signed", (req, res) => {
     if (!req.session.user) {
         res.redirect("/register");
     } else {
-        db.getLastSig(req.session.signatureId)
+        db.getLastSig(req.session.user.signatureId)
             .then(({ rows }) => {
                 res.render("signed", {
                     layout: "main",
                     title: "signed",
-                    sigNum: req.session.signatureId,
+                    sigNum: req.session.user.signatureId,
                     data: rows[0].signature
                 });
             })
             .catch(err => {
-                console.log(err);
+                console.log("Error on the signed page", err);
             });
     }
 });
