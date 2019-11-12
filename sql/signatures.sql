@@ -8,7 +8,7 @@
 
 -- INSERT INTO signatures (firstname, lastname, signature) VALUES ('jo', 'doe', '3610156');
 -- altere this table
-DROP TABLE IF EXISTS signatures;
+-- DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures(
     id SERIAL PRIMARY KEY,
     signature TEXT NOT NULL,

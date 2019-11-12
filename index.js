@@ -83,7 +83,7 @@ app.post("/register", (req, res) => {
                 };
                 console.log("success");
                 console.log(req.session.user);
-                res.redirect("/petition"); //petition page
+                res.redirect("/profile"); //petition page
             })
             .catch(err => {
                 console.log("Error on the registar POST", err);
@@ -92,6 +92,58 @@ app.post("/register", (req, res) => {
             });
     });
     // if fails, render a template with an error message.
+});
+
+app.get("/profile", (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else {
+        res.render("profile", {
+            layout: "main",
+            title: "profile"
+        });
+    }
+});
+
+app.post("/profile", (req, res) => {
+    let age = req.body.age;
+    let city = req.body.city;
+    let userId = req.session.user.userId;
+    let url = req.body.url;
+
+    if (!age && !city && !url) {
+        res.redirect("/petition");
+        if (!url.startWith("http://")) {
+            url = "http://" + url;
+        }
+    } else {
+        db.addProfile(age, city, url, userId)
+            .then(({ rows }) => {
+                console.log("success");
+                res.redirect("/petition");
+            })
+            .catch(err => {
+                console.log("Error on the profile page ", err);
+                res.redirect("/profile");
+            });
+    }
+    //do a check for the http startWith
+});
+
+app.get("/signers/:city", (req, res) => {
+    const { city } = req.params;
+    db.getCities(city)
+        .then(({ rows }) => {
+            res.render("city", {
+                layout: "main",
+                title: `${city}`,
+                data: rows,
+                city: city
+            });
+        })
+        .catch(err => {
+            console.log("Combined error ", err);
+        });
 });
 
 app.get("/login", (req, res) => {
@@ -127,7 +179,7 @@ app.post("/login", (req, res) => {
                                 req.session.user.signatureId = rows[0].id;
                                 res.redirect("/petition/signed");
                             } else {
-                                res.redirect("/petition");
+                                res.redirect("/register");
                             }
                         })
                         .catch(err => console.log("Getting the user id", err));
@@ -142,6 +194,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/petition/signed", (req, res) => {
+    // !req.session.user.signatureId
     if (!req.session.user) {
         res.redirect("/register");
     } else {
@@ -166,6 +219,7 @@ app.get("/petition/signers", (req, res) => {
     } else {
         db.getSigNames()
             .then(({ rows }) => {
+                console.log(rows);
                 res.render("signers", {
                     layout: "main",
                     title: "signers",
@@ -177,38 +231,8 @@ app.get("/petition/signers", (req, res) => {
             });
     }
 });
-// app.post("/add-city", (req, res) => {
-//     db.addCity("Sarajevo", 70000)
-//         .then(() => {
-//             console.log("success");
-//         })
-//         .catch(err => {
-//             console.log(err);
-//         });
-// });
-//
-// app.get("/cities", (req, res) => {
-//     db.getCities()
-//         .then(({ rows }) => {
-//             console.log("Rows: ", rows);
-//             //Rows is the only property we need to care about.
-//             //Rows are always an ARRAY of objects.
-//         })
-//         .catch(err => {
-//             console.log(err);
-//         });
-// });
 
-// app.get("/sig", (req, res) => {
-//     db.getSig()
-//         .then(({ rows }) => {
-//             console.log("Rows: ", rows);
-//
-//             //Rows is the only property we need to care about.
-//             //Rows are always an ARRAY of objects.
-//         })
-//         .catch(err => {
-//             console.log(err);
-//         });
-// });
 app.listen(8080, () => console.log("listening petition project on port 8080"));
+
+//Check for the url with the method str.startWith() --> returns a boolian;
+// req.body.url

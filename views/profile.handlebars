@@ -1,0 +1,15 @@
+<div class="welcome">
+    <h1>Now please tell us a little bit more about yourself</h1>
+    <h2>This is the Profile Page</h2>
+</div>
+
+<form class="registration" method="POST"><br>
+    Age:<br>
+    <input type="number" name="age"><br>
+    City <br>
+    <input type="text" name="city"><br>
+    Homepage <br>
+    <input type="url" name="url"> <br>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" name="continue" class="submit">Continue</button>
+</form>
