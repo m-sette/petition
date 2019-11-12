@@ -27,7 +27,13 @@ module.exports.addSigners = function(signature, users_id) {
 };
 
 module.exports.getUser = function(email) {
-    return db.query("SELECT * FROM users WHERE email = $1", [email]);
+    return db.query(
+        `SELECT users.id AS u_id, * FROM users
+        FULL OUTER JOIN signatures
+        ON users.id = signatures.users_id
+        WHERE email = $1`,
+        [email]
+    );
 };
 
 module.exports.addUser = function(firstname, lastname, email, password) {

@@ -36,6 +36,8 @@ app.get("/", (req, res) => {
 app.get("/petition", (req, res) => {
     if (!req.session.user) {
         res.redirect("/register");
+    } else if (req.session.user.signatureId) {
+        res.redirect("/petition/signed");
     } else {
         res.render("petition", {
             layout: "main",
@@ -164,29 +166,30 @@ app.post("/login", (req, res) => {
 
     db.getUser(email)
         .then(({ rows }) => {
-            compare(pw, rows[0].password).then(val => {
-                // req.session.user.userId = rows[0].id;
-                if (val) {
-                    req.session.user = {
-                        name: rows[0].firstname,
-                        last: rows[0].lastname,
-                        userId: rows[0].id
-                    };
-                    db.getUserId(req.session.user.userId)
-                        .then(({ rows }) => {
-                            console.log(rows.length);
-                            if (rows.length > 0) {
-                                req.session.user.signatureId = rows[0].id;
-                                res.redirect("/petition/signed");
-                            } else {
-                                res.redirect("/register");
-                            }
-                        })
-                        .catch(err => console.log("Getting the user id", err));
-                } else {
-                    res.redirect("/login");
-                }
-            });
+            compare(pw, rows[0].password)
+                .then(val => {
+                    if (val) {
+                        // console.log(rows);
+                        req.session.user = {
+                            name: rows[0].firstname,
+                            last: rows[0].lastname,
+                            userId: rows[0].u_id
+                        };
+                        console.log(req.session.user);
+                        if (rows[0].signature != null) {
+                            req.session.user.signatureId = rows[0].id;
+                            res.redirect("/petition/signed");
+                            console.log(req.session.user);
+                        } else {
+                            res.redirect("/petition");
+                        }
+                    } else {
+                        res.redirect("/login");
+                    }
+                })
+                .catch(err => {
+                    console.log("Comapare: ", err);
+                });
         })
         .catch(err => {
             console.log("Error on the login page: ", err);
@@ -200,11 +203,13 @@ app.get("/petition/signed", (req, res) => {
     } else {
         db.getLastSig(req.session.user.signatureId)
             .then(({ rows }) => {
+                console.log(rows);
                 res.render("signed", {
                     layout: "main",
                     title: "signed",
-                    sigNum: req.session.user.signatureId,
-                    data: rows[0].signature
+                    sigNum: rows[0].COUNT, // not working
+                    data: rows[0].signature,
+                    name: req.session.user.name
                 });
             })
             .catch(err => {
@@ -219,7 +224,6 @@ app.get("/petition/signers", (req, res) => {
     } else {
         db.getSigNames()
             .then(({ rows }) => {
-                console.log(rows);
                 res.render("signers", {
                     layout: "main",
                     title: "signers",
@@ -236,3 +240,18 @@ app.listen(8080, () => console.log("listening petition project on port 8080"));
 
 //Check for the url with the method str.startWith() --> returns a boolian;
 // req.body.url
+
+// db.getUserId(req.session.user.userId)
+//     .then(({ rows }) => {
+//         console.log(rows.length);
+//         if (rows.length > 0) {
+//             req.session.user.signatureId = rows[0].id;
+//             res.redirect("/petition/signed");
+//         } else {
+//             res.redirect("/petition");
+//         }
+//     })
+//     .catch(err => console.log("Getting the user id", err));
+// } else {
+// res.redirect("/login");
+// }
