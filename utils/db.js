@@ -62,6 +62,16 @@ module.exports.getCities = function(city) {
     );
 };
 
+module.exports.getProfile = function(user_id) {
+    return db.query(
+        `SELECT * FROM users
+        FULL OUTER JOIN users_profiles
+        ON users.id = users_profiles.user_id
+        WHERE user_id = $1`,
+        [user_id]
+    );
+};
+
 //Joined query
 // SELECT * FROM singers
 // JOIN songs

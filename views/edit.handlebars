@@ -1,0 +1,23 @@
+<div class="welcome">
+    <h1>Now please change the values you want to edit</h1>
+    <h2>This is the Edit Page</h2>
+</div>
+
+<form class="registration" method="POST"><br>
+    First Name:<br>
+    <input type="text" name="fisrt" value="{{name}}"><br>
+    Last Name <br>
+    <input type="text" name="last" value="{{last}}"><br>
+    Email Adress<br>
+    <input type="email" name="email" value="{{email}}"> <br>
+    Password<br>
+    <input type="password" name="password" value=""> <br>
+    Age<br>
+    <input type="number" name="age" value="{{age}}"> <br>
+    City<br>
+    <input type="text" name="city" value="{{city}}"> <br>
+    Homepage <br>
+    <input type="url" name="url" value="{{url}}"> <br>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" name="update" class="submit">Update</button>
+</form>

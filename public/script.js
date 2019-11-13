@@ -2,11 +2,11 @@
     let canvas = $("#canvas-body");
     let x, y;
     let drawing = false;
-    const c = canvas[0].getContext("2d");
+    let c = canvas[0].getContext("2d");
     const rect = canvas[0].getBoundingClientRect();
     const sign = $("#sig");
     const submit = $("#submit");
-    const form = $(".registration");
+    let form = $(".registration");
     console.log(form);
 
     // submit.on("click", e => {

@@ -129,7 +129,6 @@ app.post("/profile", (req, res) => {
                 res.redirect("/profile");
             });
     }
-    //do a check for the http startWith
 });
 
 app.get("/signers/:city", (req, res) => {
@@ -203,7 +202,7 @@ app.get("/petition/signed", (req, res) => {
     } else {
         db.getLastSig(req.session.user.signatureId)
             .then(({ rows }) => {
-                console.log(rows);
+                // console.log(rows);
                 res.render("signed", {
                     layout: "main",
                     title: "signed",
@@ -227,7 +226,7 @@ app.get("/petition/signers", (req, res) => {
                 res.render("signers", {
                     layout: "main",
                     title: "signers",
-                    names: rows
+                    data: rows
                 });
             })
             .catch(err => {
@@ -236,22 +235,37 @@ app.get("/petition/signers", (req, res) => {
     }
 });
 
+app.get("/profile/edit", (req, res) => {
+    // let firstname = req.body.firstname.val();
+    // let lastname = req.body.lastname;
+    // let email = req.body.email;
+    // let pw = req.body.password;
+    // let age = req.body.age;
+    // let url = req.body.url;
+    // let city = req.body.city;
+
+    console.log(req.session.user);
+
+    db.getProfile(req.session.user.userId)
+        .then(({ rows }) => {
+            console.log(rows);
+
+            res.render("edit", {
+                layout: "main",
+                title: "edit",
+                name: rows[0].firstname,
+                last: rows[0].lastname,
+                email: rows[0].email,
+                age: rows[0].age,
+                city: rows[0].city,
+                url: rows[0].urls
+            });
+        })
+        .catch(err => {
+            console.log("Error on the edit page: ", err);
+        });
+});
+
+app.post("/profile/edit", (req, res) => {});
+
 app.listen(8080, () => console.log("listening petition project on port 8080"));
-
-//Check for the url with the method str.startWith() --> returns a boolian;
-// req.body.url
-
-// db.getUserId(req.session.user.userId)
-//     .then(({ rows }) => {
-//         console.log(rows.length);
-//         if (rows.length > 0) {
-//             req.session.user.signatureId = rows[0].id;
-//             res.redirect("/petition/signed");
-//         } else {
-//             res.redirect("/petition");
-//         }
-//     })
-//     .catch(err => console.log("Getting the user id", err));
-// } else {
-// res.redirect("/login");
-// }
