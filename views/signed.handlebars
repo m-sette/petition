@@ -5,6 +5,10 @@
 <div class="signatures">
     <img src="{{data}}" alt="signature">
 <p><a href="/petition/signers">See all others {{sigNum}} signatures</a></p>
-<p><a href="#"></a>Edit your profile</p>
-<p><a href="#"></a> Delete your signature</p>
+<p><a href="/profile/edit">Edit your profile</a></p>
+
+<form class="delete" method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <button type="submit" name="button">Delete signature</button>
+</form>
 </div>

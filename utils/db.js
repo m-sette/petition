@@ -75,6 +75,51 @@ module.exports.getProfile = function(user_id) {
     );
 };
 
+module.exports.updateUser = function(firstname, lastname, email, id) {
+    return db.query(
+        `UPDATE users
+        SET firstname = $1, lastname = $2, email = $3
+        WHERE id = $4`,
+        [firstname, lastname, email, id]
+    );
+};
+
+module.exports.updateUserPw = function(
+    firstname,
+    lastname,
+    email,
+    password,
+    id
+) {
+    return db.query(
+        `UPDATE users
+        SET firstname = $1, lastname = $2, email = $3, password = $4
+        WHERE id = $5`,
+        [firstname, lastname, email, password, id]
+    );
+};
+
+module.exports.updateUserProfile = function(age, city, url, user_id) {
+    return db.query(
+        `
+        INSERT INTO users_profiles (age, city, url, user_id)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (user_id)
+        DO UPDATE SET age = $1, city = $2, url = $3
+        `,
+        [age, city, url, user_id]
+    );
+};
+
+module.exports.deleteSignature = function(id) {
+    return db.query(
+        `
+        DELETE FROM signatures
+        WHERE id = $1;
+        `,
+        [id]
+    );
+};
 //Joined query
 // SELECT * FROM singers
 // JOIN songs

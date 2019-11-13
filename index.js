@@ -227,6 +227,20 @@ app.get("/petition/signed", (req, res) => {
     }
 });
 
+app.post("/petition/signed", (req, res) => {
+    let sigId = req.session.user.signatureId;
+    console.log(sigId);
+    db.deleteSignature(sigId)
+        .then(() => {
+            req.session.user.signatureId = null;
+            console.log("Delete success");
+            res.redirect("/petition");
+        })
+        .catch(err => {
+            console.log("Delete error ", err);
+        });
+});
+
 app.get("/petition/signers", (req, res) => {
     if (!req.session.user) {
         res.redirect("/register");
@@ -246,20 +260,10 @@ app.get("/petition/signers", (req, res) => {
 });
 
 app.get("/profile/edit", (req, res) => {
-    // let firstname = req.body.firstname.val();
-    // let lastname = req.body.lastname;
-    // let email = req.body.email;
-    // let pw = req.body.password;
-    // let age = req.body.age;
-    // let url = req.body.url;
-    // let city = req.body.city;
-
     console.log(req.session.user);
 
     db.getProfile(req.session.user.userId)
         .then(({ rows }) => {
-            console.log(rows);
-
             res.render("edit", {
                 layout: "main",
                 title: "edit",
@@ -276,7 +280,54 @@ app.get("/profile/edit", (req, res) => {
         });
 });
 
-app.post("/profile/edit", (req, res) => {});
+app.post("/profile/edit", (req, res) => {
+    let firstname = req.body.first;
+    let lastname = req.body.last;
+    let email = req.body.email;
+    let pw = req.body.password;
+    let age = req.body.age;
+    let url = req.body.url;
+    let city = req.body.city;
+    let id = req.session.user.userId;
+
+    console.log(pw);
+
+    if (pw) {
+        hash(pw).then(hashedpwd => {
+            db.updateUserPw(firstname, lastname, email, hashedpwd, id)
+                .then(() => {
+                    console.log("success new pw");
+                    db.updateUserProfile(age, city, url, id)
+                        .then(() => {
+                            console.log("success");
+                        })
+                        .catch(err => {
+                            console.log("Error on the user profile ", err);
+                        });
+                    res.redirect("/profile/edit");
+                })
+                .catch(err => {
+                    console.log("Update Pw error", err);
+                });
+        });
+    } else {
+        db.updateUser(firstname, lastname, email, id)
+            .then(() => {
+                console.log("success");
+                db.updateUserProfile(age, city, url, id)
+                    .then(() => {
+                        console.log("success");
+                    })
+                    .catch(err => {
+                        console.log("Error on the user profile ", err);
+                    });
+                res.redirect("/profile/edit");
+            })
+            .catch(err => {
+                console.log("Error on the users update request: ", err);
+            });
+    }
+});
 
 app.listen(process.env.PORT || 8080, () =>
     console.log("listening petition project on port 8080")
