@@ -1,13 +1,10 @@
 <div class="welcome">
-    <h1>Welcome to my petition page</h1>
+    <h1>Thank you {{name}} for creating a profile.</h1>
+    <h2>Please sign below to contribute, or maybe in later time</h2>
 </div>
 
 <form class="registration"  method="POST">
-    <p id="error">Something went wrong. Please try again</p><br>
-    <!-- First name:<br>
-    <input type="text" name="firstname" required><br>
-    Last name:<br>
-    <input type="text" name="lastname" required><br> -->
+    <p>{{error}}</p><br>
     Sign Here<br>
     <input type="hidden" name="signature" id="sig" required><br>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">

@@ -1,12 +1,12 @@
 <div class="welcome">
-    <h1>Now please tell us a little bit more about yourself</h1>
-    <h2>This is the Profile Page</h2>
-    <p>{{error}}</p>
+    <h1>Hello {{name}}, nice to have you here</h1>
+    <h2>Please tell more about you (optional)</h2>
 </div>
 
 <form class="registration" method="POST"><br>
+    <p>{{error}}</p>
     Age:<br>
-    <input type="number" name="age"><br>
+    <input type="number" name="age" min="10" max="100"><br>
     City <br>
     <input type="text" name="city"><br>
     Homepage <br>

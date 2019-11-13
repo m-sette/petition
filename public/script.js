@@ -5,9 +5,9 @@
     let c = canvas[0].getContext("2d");
     const rect = canvas[0].getBoundingClientRect();
     const sign = $("#sig");
-    const submit = $("#submit");
-    let form = $(".registration");
-    console.log(form);
+    // const submit = $("#submit");
+    // let form = $(".registration");
+    // console.log(form);
 
     // submit.on("click", e => {
     //     console.log(e);
@@ -37,7 +37,6 @@
         drawing = false;
         const dataURL = canvas[0].toDataURL();
         sign.val(dataURL);
-        //console.log(sign.val());
     });
 
     function draw(c, x1, y1, x2, y2) {

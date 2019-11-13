@@ -42,7 +42,8 @@ app.get("/petition", (req, res) => {
     } else {
         res.render("petition", {
             layout: "main",
-            title: "Petition"
+            title: "Petition",
+            name: req.session.user.name
         });
     }
 });
@@ -59,7 +60,12 @@ app.post("/petition", (req, res) => {
             res.redirect("/petition/signed");
         })
         .catch(err => {
-            console.log(err);
+            console.log("Petion signing error: ", err);
+            res.render("petition", {
+                layout: "main",
+                title: "petition",
+                error: "Something went wrong"
+            });
         });
 });
 
@@ -90,10 +96,10 @@ app.post("/register", (req, res) => {
             })
             .catch(err => {
                 console.log("Error on the registar POST", err);
-                res.render("/register", {
+                res.render("register", {
                     layout: "main",
-                    title: "register",
-                    error: "Something went wrong, please try again"
+                    title: "registration",
+                    error: "Something went wrong. Maybe try different password"
                 });
             });
     });
@@ -106,7 +112,8 @@ app.get("/profile", (req, res) => {
     } else {
         res.render("profile", {
             layout: "main",
-            title: "profile"
+            title: "profile",
+            name: req.session.user.name
         });
     }
 });
@@ -132,9 +139,9 @@ app.post("/profile", (req, res) => {
                 console.log("Error on the profile page ", err);
                 res.redirect("/profile");
 
-                res.render("/profiles", {
+                res.render("/profile", {
                     layout: "main",
-                    title: "profiles",
+                    title: "profile",
                     error: "Something went wrong, please try again"
                 });
             });
@@ -209,6 +216,8 @@ app.get("/petition/signed", (req, res) => {
     // !req.session.user.signatureId
     if (!req.session.user) {
         res.redirect("/register");
+    } else if (!req.session.user.signatureId) {
+        res.redirect("/petition");
     } else {
         db.getLastSig(req.session.user.signatureId)
             .then(({ rows }) => {
@@ -260,24 +269,26 @@ app.get("/petition/signers", (req, res) => {
 });
 
 app.get("/profile/edit", (req, res) => {
-    console.log(req.session.user);
-
-    db.getProfile(req.session.user.userId)
-        .then(({ rows }) => {
-            res.render("edit", {
-                layout: "main",
-                title: "edit",
-                name: rows[0].firstname,
-                last: rows[0].lastname,
-                email: rows[0].email,
-                age: rows[0].age,
-                city: rows[0].city,
-                url: rows[0].urls
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else {
+        db.getProfile(req.session.user.userId)
+            .then(({ rows }) => {
+                res.render("edit", {
+                    layout: "main",
+                    title: "edit",
+                    name: rows[0].firstname,
+                    last: rows[0].lastname,
+                    email: rows[0].email,
+                    age: rows[0].age,
+                    city: rows[0].city,
+                    url: rows[0].url
+                });
+            })
+            .catch(err => {
+                console.log("Error on the edit page: ", err);
             });
-        })
-        .catch(err => {
-            console.log("Error on the edit page: ", err);
-        });
+    }
 });
 
 app.post("/profile/edit", (req, res) => {
@@ -289,8 +300,6 @@ app.post("/profile/edit", (req, res) => {
     let url = req.body.url;
     let city = req.body.city;
     let id = req.session.user.userId;
-
-    console.log(pw);
 
     if (pw) {
         hash(pw).then(hashedpwd => {
@@ -304,7 +313,7 @@ app.post("/profile/edit", (req, res) => {
                         .catch(err => {
                             console.log("Error on the user profile ", err);
                         });
-                    res.redirect("/profile/edit");
+                    res.redirect("/petition/signed");
                 })
                 .catch(err => {
                     console.log("Update Pw error", err);
@@ -321,10 +330,11 @@ app.post("/profile/edit", (req, res) => {
                     .catch(err => {
                         console.log("Error on the user profile ", err);
                     });
-                res.redirect("/profile/edit");
+                res.redirect("/petition/signed");
             })
             .catch(err => {
                 console.log("Error on the users update request: ", err);
+                res.redirect("/profile/edit");
             });
     }
 });

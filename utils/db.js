@@ -120,20 +120,3 @@ module.exports.deleteSignature = function(id) {
         [id]
     );
 };
-//Joined query
-// SELECT * FROM singers
-// JOIN songs
-// ON singers.id = song.singer_id;
-
-// SELECT firstname, lastname  FROM users
-// JOIN signatures
-// ON users.id = signatures.users_id;
-
-// SELECT * FROM users_profiles
-// FULL OUTER JOIN users
-// ON users.id = users_profiles.user_id
-// ;
-
-// SELECT firstname, city, age, url FROM users
-// INNER JOIN users_profiles
-// ON users.id = users_profiles.user_id;

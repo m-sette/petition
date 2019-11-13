@@ -5,17 +5,17 @@
 
 <form class="registration" method="POST"><br>
     First Name:<br>
-    <input type="text" name="first" value="{{name}}"><br>
+    <input type="text" name="first" value="{{name}}" required><br>
     Last Name <br>
-    <input type="text" name="last" value="{{last}}"><br>
+    <input type="text" name="last" value="{{last}}" required><br>
     Email Adress<br>
-    <input type="email" name="email" value="{{email}}"> <br>
+    <input type="email" name="email" value="{{email}}" required> <br>
     New Password<br>
     <input type="password" name="password" value=""> <br>
     Age<br>
-    <input type="number" name="age" value="{{age}}"> <br>
+    <input type="number" name="age" value="{{age}}" required> <br>
     City<br>
-    <input type="text" name="city" value="{{city}}"> <br>
+    <input type="text" name="city" value="{{city}}" required> <br>
     Homepage <br>
     <input type="url" name="url" value="{{url}}"> <br>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
