@@ -1,5 +1,8 @@
 var spicedPg = require("spiced-pg");
-var db = spicedPg("postgres:postgres:postgres@localhost:5432/petition");
+var db = spicedPg(
+    process.env.DATABASE_URL ||
+        "postgres:postgres:postgres@localhost:5432/petition"
+);
 
 module.exports.getLastSig = function(id) {
     return db.query("SELECT * FROM signatures WHERE id = $1", [id]);

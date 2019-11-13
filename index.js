@@ -5,6 +5,7 @@ const hb = require("express-handlebars");
 const csurf = require("csurf");
 const { hash, compare } = require("./utils/bc");
 const cookieSession = require("cookie-session");
+
 app.use(express.urlencoded({ extended: false }));
 
 app.engine("handlebars", hb());
@@ -89,8 +90,11 @@ app.post("/register", (req, res) => {
             })
             .catch(err => {
                 console.log("Error on the registar POST", err);
-                res.send(`<p>Error ${err.detail}</p>`);
-                res.redirect("/register");
+                res.render("/register", {
+                    layout: "main",
+                    title: "register",
+                    error: "Something went wrong, please try again"
+                });
             });
     });
     // if fails, render a template with an error message.
@@ -127,6 +131,12 @@ app.post("/profile", (req, res) => {
             .catch(err => {
                 console.log("Error on the profile page ", err);
                 res.redirect("/profile");
+
+                res.render("/profiles", {
+                    layout: "main",
+                    title: "profiles",
+                    error: "Something went wrong, please try again"
+                });
             });
     }
 });
@@ -268,4 +278,6 @@ app.get("/profile/edit", (req, res) => {
 
 app.post("/profile/edit", (req, res) => {});
 
-app.listen(8080, () => console.log("listening petition project on port 8080"));
+app.listen(process.env.PORT || 8080, () =>
+    console.log("listening petition project on port 8080")
+);
