@@ -5,15 +5,11 @@ const db = require("./utils/db");
 
 // profile GET and POST
 router.get("/", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else {
-        res.render("profile", {
-            layout: "main",
-            title: "profile",
-            name: req.session.user.name
-        });
-    }
+    res.render("profile", {
+        layout: "main",
+        title: "profile",
+        name: req.session.user.name
+    });
 });
 
 router.post("/", (req, res) => {
@@ -48,26 +44,22 @@ router.post("/", (req, res) => {
 
 // profile edit GET and POST
 router.get("/edit", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else {
-        db.getProfile(req.session.user.userId)
-            .then(({ rows }) => {
-                res.render("edit", {
-                    layout: "main",
-                    title: "edit",
-                    name: rows[0].firstname,
-                    last: rows[0].lastname,
-                    email: rows[0].email,
-                    age: rows[0].age,
-                    city: rows[0].city,
-                    url: rows[0].url
-                });
-            })
-            .catch(err => {
-                console.log("Error on the edit page: ", err);
+    db.getProfile(req.session.user.userId)
+        .then(({ rows }) => {
+            res.render("edit", {
+                layout: "main",
+                title: "edit",
+                name: rows[0].firstname,
+                last: rows[0].lastname,
+                email: rows[0].email,
+                age: rows[0].age,
+                city: rows[0].city,
+                url: rows[0].url
             });
-    }
+        })
+        .catch(err => {
+            console.log("Error on the edit page: ", err);
+        });
 });
 
 router.post("/edit", (req, res) => {

@@ -56,22 +56,23 @@ app.post("/login", requireLoggedOutUser, (req, res) => {
             compare(pw, rows[0].password)
                 .then(val => {
                     if (val) {
-                        // console.log(rows);
                         req.session.user = {
                             name: rows[0].firstname,
                             last: rows[0].lastname,
                             userId: rows[0].u_id
                         };
-                        console.log(req.session.user);
                         if (rows[0].signature != null) {
                             req.session.user.signatureId = rows[0].id;
                             res.redirect("/petition/signed");
-                            console.log(req.session.user);
                         } else {
                             res.redirect("/petition");
                         }
                     } else {
-                        res.redirect("/login");
+                        res.render("login", {
+                            layout: "main",
+                            title: "login",
+                            error: "Wrong user name or password"
+                        });
                     }
                 })
                 .catch(err => {

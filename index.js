@@ -6,7 +6,12 @@ const hb = require("express-handlebars");
 const csurf = require("csurf");
 // const { hash, compare } = require("./utils/bc");
 const cookieSession = require("cookie-session");
-const { requireLoggedInUser } = require("./middleware");
+const {
+    requireSignature,
+    requireNoSignature,
+    requireLoggedOutUser,
+    requireLoggedInUser
+} = require("./middleware");
 const profileRouter = require("./profile");
 
 app.engine("handlebars", hb());
@@ -31,9 +36,9 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.get("/", (req, res) => {
+app.get("/", requireLoggedOutUser, (req, res) => {
     console.log(req.session.user);
-    res.redirect("/petition");
+    res.redirect("/register");
 });
 
 app.use(requireLoggedInUser);
@@ -42,21 +47,15 @@ app.use("/profile", profileRouter);
 
 require("./auth");
 
-app.get("/petition", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else if (req.session.user.signatureId) {
-        res.redirect("/petition/signed");
-    } else {
-        res.render("petition", {
-            layout: "main",
-            title: "Petition",
-            name: req.session.user.name
-        });
-    }
+app.get("/petition", requireNoSignature, (req, res) => {
+    res.render("petition", {
+        layout: "main",
+        title: "Petition",
+        name: req.session.user.name
+    });
 });
 
-app.post("/petition", (req, res) => {
+app.post("/petition", requireNoSignature, (req, res) => {
     let signature = req.body.signature;
     let userid = req.session.user.userId;
     console.log(userid);
@@ -77,7 +76,7 @@ app.post("/petition", (req, res) => {
         });
 });
 
-app.get("/signers/:city", (req, res) => {
+app.get("/signers/:city", requireSignature, (req, res) => {
     const { city } = req.params;
     db.getCities(city)
         .then(({ rows }) => {
@@ -93,32 +92,23 @@ app.get("/signers/:city", (req, res) => {
         });
 });
 
-app.get("/petition/signed", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else if (!req.session.user.signatureId) {
-        res.redirect("/petition");
-    } else {
-        Promise.all([
-            db.getLastSig(req.session.user.signatureId),
-            db.getSigTotal()
-        ])
-            .then(result => {
-                res.render("signed", {
-                    layout: "main",
-                    title: "signed",
-                    sigNum: result[1].rows[0].count,
-                    data: result[0].rows[0].signature,
-                    name: req.session.user.name
-                });
-            })
-            .catch(err => {
-                console.log("Error on the signed page", err);
+app.get("/petition/signed", requireSignature, (req, res) => {
+    Promise.all([db.getLastSig(req.session.user.signatureId), db.getSigTotal()])
+        .then(result => {
+            res.render("signed", {
+                layout: "main",
+                title: "signed",
+                sigNum: result[1].rows[0].count,
+                data: result[0].rows[0].signature,
+                name: req.session.user.name
             });
-    }
+        })
+        .catch(err => {
+            console.log("Error on the signed page", err);
+        });
 });
 
-app.post("/petition/signed", (req, res) => {
+app.post("/petition/signed", requireSignature, (req, res) => {
     let sigId = req.session.user.signatureId;
     console.log(sigId);
     db.deleteSignature(sigId)
@@ -132,22 +122,18 @@ app.post("/petition/signed", (req, res) => {
         });
 });
 
-app.get("/petition/signers", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else {
-        db.getSigNames()
-            .then(({ rows }) => {
-                res.render("signers", {
-                    layout: "main",
-                    title: "signers",
-                    data: rows
-                });
-            })
-            .catch(err => {
-                console.log("Error on signers page: ", err);
+app.get("/petition/signers", requireSignature, (req, res) => {
+    db.getSigNames()
+        .then(({ rows }) => {
+            res.render("signers", {
+                layout: "main",
+                title: "signers",
+                data: rows
             });
-    }
+        })
+        .catch(err => {
+            console.log("Error on signers page: ", err);
+        });
 });
 
 app.get("/logout", (req, res) => {

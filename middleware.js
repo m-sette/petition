@@ -15,14 +15,14 @@ exports.requireLoggedOutUser = function(req, res, next) {
 
 exports.requireNoSignature = function(req, res, next) {
     if (req.session.user.signatureId) {
-        res.redirect("/signed");
+        res.redirect("/petition/signed");
     } else {
         next();
     }
 };
 
 exports.requireSignature = function(req, res, next) {
-    if (!req.session.user.signatireId) {
+    if (!req.session.user.signatureId) {
         res.redirect("/petition");
     } else {
         next();
