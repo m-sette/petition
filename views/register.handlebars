@@ -1,19 +1,20 @@
+
 <div class="welcome">
     <h1>Welcome to my petition page</h1>
     <h2>This is the registration Page</h2>
-
 </div>
 
-<form class="registration" method="POST"><br>
-    <p>{{error}}</p><br>
-    First Name:<br>
-    <input type="text" name="firstname" required><br>
-    Last Name <br>
-    <input type="text" name="lastname" required><br>
-    E-mail address <br>
-    <input type="email" name="email" required> <br>
-    Password <br>
-    <input type="password" name="password" required> <br>
+<form class="registration" method="POST">
+    <p>{{error}}</p>
+    First Name:
+    <input type="text" name="firstname" required>
+    Last Name
+    <input type="text" name="lastname" required>
+    E-mail address
+    <input type="email" name="email" required>
+    Password
+    <input type="password" name="password" required>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <button type="submit" name="sign-up" class="submit">SIGN UP</button>
+    <a href="/login"><p>Log-in</p></a>
 </form>

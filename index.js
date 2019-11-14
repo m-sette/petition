@@ -1,5 +1,10 @@
 const express = require("express");
 const app = express();
+
+//////// Refactoring code
+// module.exports = app;
+///////
+
 const db = require("./utils/db");
 const hb = require("express-handlebars");
 const csurf = require("csurf");
@@ -12,6 +17,7 @@ app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
 
 app.use(express.static("./public"));
+const profileRouter = require("./profile");
 
 // this is the method to store the Signature in the cookie session.
 app.use(
@@ -21,52 +27,40 @@ app.use(
     })
 );
 
+/// Add middleware functioin in a separete file and export then
+// function requiredLogout(req, res, next) {
+//     if (req.session.user) {
+//         res.redirect("/petition");
+//     } else {
+//         next();
+//     }
+// }
+
 app.use(csurf());
 
 app.use(function(req, res, next) {
-    res.set("X-Frame-Options", "deny");
+    res.setHeader("X-Frame-Options", "DENY");
     res.locals.csrfToken = req.csrfToken();
     next();
 });
 
+////Todays material
+
+// app.use((req, res, next) => {
+//     if (
+//         !req.session.user.userId &&
+//         req.url != "/register" &&
+//         req.url != "login"
+//     ) {
+//         res.redirect("/register");
+//     } else {
+//         next();
+//     }
+// });
+
 app.get("/", (req, res) => {
     console.log(req.session.user);
     res.redirect("/petition");
-});
-
-app.get("/petition", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/register");
-    } else if (req.session.user.signatureId) {
-        res.redirect("/petition/signed");
-    } else {
-        res.render("petition", {
-            layout: "main",
-            title: "Petition",
-            name: req.session.user.name
-        });
-    }
-});
-
-app.post("/petition", (req, res) => {
-    let signature = req.body.signature;
-    let userid = req.session.user.userId;
-    console.log(userid);
-
-    db.addSigners(signature, userid)
-        .then(({ rows }) => {
-            req.session.user.signatureId = rows[0].id;
-            console.log("success");
-            res.redirect("/petition/signed");
-        })
-        .catch(err => {
-            console.log("Petion signing error: ", err);
-            res.render("petition", {
-                layout: "main",
-                title: "petition",
-                error: "Something went wrong"
-            });
-        });
 });
 
 app.get("/register", (req, res) => {
@@ -104,6 +98,49 @@ app.post("/register", (req, res) => {
             });
     });
     // if fails, render a template with an error message.
+});
+
+app.get("/login", (req, res) => {
+    res.render("login", {
+        layout: "main",
+        title: "login"
+    });
+});
+
+app.post("/login", (req, res) => {
+    let email = req.body.email;
+    let pw = req.body.password;
+
+    db.getUser(email)
+        .then(({ rows }) => {
+            compare(pw, rows[0].password)
+                .then(val => {
+                    if (val) {
+                        // console.log(rows);
+                        req.session.user = {
+                            name: rows[0].firstname,
+                            last: rows[0].lastname,
+                            userId: rows[0].u_id
+                        };
+                        console.log(req.session.user);
+                        if (rows[0].signature != null) {
+                            req.session.user.signatureId = rows[0].id;
+                            res.redirect("/petition/signed");
+                            console.log(req.session.user);
+                        } else {
+                            res.redirect("/petition");
+                        }
+                    } else {
+                        res.redirect("/login");
+                    }
+                })
+                .catch(err => {
+                    console.log("Comapare: ", err);
+                });
+        })
+        .catch(err => {
+            console.log("Error on the login page: ", err);
+        });
 });
 
 app.get("/profile", (req, res) => {
@@ -147,6 +184,44 @@ app.post("/profile", (req, res) => {
             });
     }
 });
+// app.use(requiredLoggedInUser)
+//app.use(profileRouter)
+// require(".auth");  a bunch of routes get added to this file
+
+app.get("/petition", (req, res) => {
+    if (!req.session.user) {
+        res.redirect("/register");
+    } else if (req.session.user.signatureId) {
+        res.redirect("/petition/signed");
+    } else {
+        res.render("petition", {
+            layout: "main",
+            title: "Petition",
+            name: req.session.user.name
+        });
+    }
+});
+
+app.post("/petition", (req, res) => {
+    let signature = req.body.signature;
+    let userid = req.session.user.userId;
+    console.log(userid);
+
+    db.addSigners(signature, userid)
+        .then(({ rows }) => {
+            req.session.user.signatureId = rows[0].id;
+            console.log("success");
+            res.redirect("/petition/signed");
+        })
+        .catch(err => {
+            console.log("Petion signing error: ", err);
+            res.render("petition", {
+                layout: "main",
+                title: "petition",
+                error: "Something went wrong"
+            });
+        });
+});
 
 app.get("/signers/:city", (req, res) => {
     const { city } = req.params;
@@ -161,54 +236,6 @@ app.get("/signers/:city", (req, res) => {
         })
         .catch(err => {
             console.log("Combined error ", err);
-        });
-});
-
-app.get("/login", (req, res) => {
-    res.render("login", {
-        layout: "main",
-        title: "login"
-    });
-});
-
-app.get("/logout", (req, res) => {
-    req.session.user = null;
-    res.redirect("/register");
-});
-
-app.post("/login", (req, res) => {
-    let email = req.body.email;
-    let pw = req.body.password;
-
-    db.getUser(email)
-        .then(({ rows }) => {
-            compare(pw, rows[0].password)
-                .then(val => {
-                    if (val) {
-                        // console.log(rows);
-                        req.session.user = {
-                            name: rows[0].firstname,
-                            last: rows[0].lastname,
-                            userId: rows[0].u_id
-                        };
-                        console.log(req.session.user);
-                        if (rows[0].signature != null) {
-                            req.session.user.signatureId = rows[0].id;
-                            res.redirect("/petition/signed");
-                            console.log(req.session.user);
-                        } else {
-                            res.redirect("/petition");
-                        }
-                    } else {
-                        res.redirect("/login");
-                    }
-                })
-                .catch(err => {
-                    console.log("Comapare: ", err);
-                });
-        })
-        .catch(err => {
-            console.log("Error on the login page: ", err);
         });
 });
 
@@ -337,6 +364,11 @@ app.post("/profile/edit", (req, res) => {
                 res.redirect("/profile/edit");
             });
     }
+});
+
+app.get("/logout", (req, res) => {
+    req.session.user = null;
+    res.redirect("/register");
 });
 
 app.listen(process.env.PORT || 8080, () =>

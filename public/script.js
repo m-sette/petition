@@ -5,19 +5,17 @@
     let c = canvas[0].getContext("2d");
     const rect = canvas[0].getBoundingClientRect();
     const sign = $("#sig");
-    // const submit = $("#submit");
-    // let form = $(".registration");
-    // console.log(form);
+    const submit = $("#submit");
+    let form = $(".registration");
 
-    // submit.on("click", e => {
-    //     console.log(e);
-    //     for (let i = 0; i <= 2; i++) {
-    //         if (!form[0][i].value) {
-    //             $("#error").css("visibility", "visible");
-    //             e.preventDefault();
-    //         }
-    //     }
-    // });
+    submit.on("click", e => {
+        console.log(e);
+
+        if (!form[0][0].value) {
+            $("#error").css("visibility", "visible");
+            e.preventDefault();
+        }
+    });
 
     canvas.on("mousedown", e => {
         drawing = true;

@@ -1,3 +1,5 @@
+{{>navigation}}
+
 <div class="welcome">
     <h1>Thank you {{name}} for creating a profile.</h1>
     <h2>Please sign below to contribute, or maybe in later time</h2>
@@ -5,6 +7,7 @@
 
 <form class="registration"  method="POST">
     <p>{{error}}</p><br>
+    <p id="error">Must add signature for the petition</p>
     Sign Here<br>
     <input type="hidden" name="signature" id="sig" required><br>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">

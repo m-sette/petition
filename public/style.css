@@ -1,14 +1,23 @@
 * {
     box-sizing: border-box;
     margin: 0;
-    background: #efe9cc;
+    background: #fefcdb;
+    font-family: comic;
 }
+
+/* f05a28 dark orange
+f7931e punpkin
+fff0bc cream
+fefcdb light cream */
 
 body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
     justify-content: space-between;
+}
+
+p {
 }
 
 header {
@@ -30,7 +39,13 @@ img {
 }
 
 .registration {
+    font-size: 1em;
     align-self: center;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f7931e;
+    border-radius: 15px;
+    padding: 10px;
 }
 
 #error {
@@ -39,7 +54,8 @@ img {
 }
 
 #canvas-body {
-    border: 1px dotted black;
+    border: 1px dotted #f7931e;
+    margin: 15px;
 }
 
 #canvas-body:hover {
@@ -52,11 +68,19 @@ img {
     align-self: center;
 }
 
+button {
+    background: #fff0bc;
+    border: 2px solid #f7931e;
+    border-radius: 15px;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
 #delete-btn {
     background: none;
     border: none;
     padding: 0;
-    color: blue;
+    color: #f05a28;
     font-family: sans-serif;
     font-size: 1em;
     text-decoration: underline;
@@ -64,7 +88,7 @@ img {
 }
 
 a {
-    color: blue;
+    color: #f05a28;
     font-family: sans-serif;
     font-size: 1em;
 }
