@@ -17,7 +17,7 @@ app.engine("handlebars", hb());
 app.set("view engine", "handlebars");
 
 app.use(express.static("./public"));
-const profileRouter = require("./profile");
+// const profileRouter = require("./profile");
 
 // this is the method to store the Signature in the cookie session.
 app.use(
@@ -240,20 +240,21 @@ app.get("/signers/:city", (req, res) => {
 });
 
 app.get("/petition/signed", (req, res) => {
-    // !req.session.user.signatureId
     if (!req.session.user) {
         res.redirect("/register");
     } else if (!req.session.user.signatureId) {
         res.redirect("/petition");
     } else {
-        db.getLastSig(req.session.user.signatureId)
-            .then(({ rows }) => {
-                // console.log(rows);
+        Promise.all([
+            db.getLastSig(req.session.user.signatureId),
+            db.getSigTotal()
+        ])
+            .then(result => {
                 res.render("signed", {
                     layout: "main",
                     title: "signed",
-                    sigNum: rows[0].COUNT, // not working
-                    data: rows[0].signature,
+                    sigNum: result[1].rows[0].count,
+                    data: result[0].rows[0].signature,
                     name: req.session.user.name
                 });
             })
@@ -330,38 +331,51 @@ app.post("/profile/edit", (req, res) => {
 
     if (pw) {
         hash(pw).then(hashedpwd => {
-            db.updateUserPw(firstname, lastname, email, hashedpwd, id)
+            Promise.all([
+                db.updateUserPw(firstname, lastname, email, hashedpwd, id),
+                db.updateUserProfile(age, city, url, id)
+            ])
                 .then(() => {
-                    console.log("success new pw");
-                    db.updateUserProfile(age, city, url, id)
-                        .then(() => {
-                            console.log("success");
-                        })
-                        .catch(err => {
-                            console.log("Error on the user profile ", err);
-                        });
+                    console.log("success");
                     res.redirect("/petition/signed");
                 })
                 .catch(err => {
-                    console.log("Update Pw error", err);
+                    console.log("Error on the user profile ", err);
+                    res.render("edit", {
+                        layout: "main",
+                        title: "edit",
+                        name: firstname,
+                        last: lastname,
+                        email: email,
+                        age: age,
+                        city: city,
+                        url: url,
+                        error: "Something went wrong"
+                    });
                 });
         });
     } else {
-        db.updateUser(firstname, lastname, email, id)
+        Promise.all([
+            db.updateUser(firstname, lastname, email, id),
+            db.updateUserProfile(age, city, url, id)
+        ])
             .then(() => {
                 console.log("success");
-                db.updateUserProfile(age, city, url, id)
-                    .then(() => {
-                        console.log("success");
-                    })
-                    .catch(err => {
-                        console.log("Error on the user profile ", err);
-                    });
                 res.redirect("/petition/signed");
             })
             .catch(err => {
-                console.log("Error on the users update request: ", err);
-                res.redirect("/profile/edit");
+                console.log("Error on the user profile ", err);
+                res.render("edit", {
+                    layout: "main",
+                    title: "edit",
+                    name: firstname,
+                    last: lastname,
+                    email: email,
+                    age: age,
+                    city: city,
+                    url: url,
+                    error: "Something went wrong"
+                });
             });
     }
 });

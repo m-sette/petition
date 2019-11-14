@@ -8,6 +8,10 @@ module.exports.getLastSig = function(id) {
     return db.query("SELECT * FROM signatures WHERE id = $1", [id]);
 };
 
+module.exports.getSigTotal = function() {
+    return db.query(`SELECT COUNT(*) FROM signatures;`);
+};
+
 module.exports.getUserId = function(id) {
     return db.query("SELECT * FROM signatures WHERE users_id = $1", [id]);
 };
