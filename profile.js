@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-    let age = req.body.age;
+    let age = req.body.age || 99;
     let city = req.body.city;
     let userId = req.session.user.userId;
     let url = req.body.url;
@@ -59,6 +59,7 @@ router.get("/edit", (req, res) => {
         })
         .catch(err => {
             console.log("Error on the edit page: ", err);
+            res.redirect("/profile");
         });
 });
 

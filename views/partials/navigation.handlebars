@@ -1,3 +1,7 @@
 <nav>
-    <a href="/logout">Logout</a>
+    {{# if sig}}
+    <a href="/petition/signers"><p>Signers list</p></a>
+    <a href="/petition/signed"><p>Thank you Page</p></a>
+    {{/if}}
+    <a href="/logout"><p id="logout">Logout</p></a>
 </nav>
