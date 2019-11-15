@@ -38,8 +38,8 @@ footer {
 }
 
 img {
-    height: 100px;
-    width: 200px;
+    height: 150px;
+    width: 500px;
 }
 
 .welcome {
@@ -69,6 +69,12 @@ ul {
 }
 
 li {
+    margin: 5px;
+}
+
+li::before {
+    content: "\1F341";
+    color: #f05a28;
     padding: 4px;
 }
 
