@@ -81,5 +81,10 @@ app.post("/login", requireLoggedOutUser, (req, res) => {
         })
         .catch(err => {
             console.log("Error on the login page: ", err);
+            res.render("login", {
+                layout: "main",
+                title: "login",
+                error: "Wrong user name or password"
+            });
         });
 });

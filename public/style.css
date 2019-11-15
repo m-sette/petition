@@ -8,7 +8,7 @@
 /* f05a28 dark orange
 f7931e punpkin
 fff0bc cream
-fefcdb light cream */
+fefcdb light cream  ----->> Document  */
 
 body {
     display: flex;
@@ -24,6 +24,14 @@ header {
     height: 70px;
 }
 
+nav {
+    border: 1px solid black;
+    height: 50px;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+}
+
 footer {
     height: 80px;
     align-self: center;
@@ -36,6 +44,7 @@ img {
 
 .welcome {
     align-self: center;
+    margin: 10px;
 }
 
 .registration {
@@ -48,9 +57,29 @@ img {
     padding: 10px;
 }
 
+.signatures {
+    border: 1px solid #f05a28;
+    padding: 20px;
+    background-color: #fff0bc;
+}
+
+ul {
+    list-style-type: none;
+    padding: 5px;
+}
+
+li {
+    padding: 4px;
+}
+
 #error {
     visibility: hidden;
     color: red;
+}
+
+.error-msg {
+    color: red;
+    font-size: 0.8em;
 }
 
 #canvas-body {
