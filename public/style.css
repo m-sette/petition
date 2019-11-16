@@ -9,7 +9,9 @@
 /* f05a28 dark orange
 f7931e punpkin
 fff0bc cream
-fefcdb light cream  ----->> Document  */
+fefcdb light cream
+51710a green
+----->> Document  */
 
 body {
     display: flex;
@@ -22,11 +24,6 @@ main {
     display: flex;
 }
 
-section {
-    display: flex;
-    flex-direction: column;
-}
-
 header {
     height: 70px;
 }
@@ -36,13 +33,17 @@ nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    color: ;
+}
+
+aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 nav p {
-    border: 1px solid #f05a28;
+    border: 1px solid #51710a;
     padding: 10px;
-    margin: 10px #fff0bc;
     border-radius: 15px;
     color: #f05a28;
 }
@@ -57,6 +58,12 @@ img {
     width: 500px;
 }
 
+.leaf {
+    height: auto;
+    width: 50%;
+    align-self: center;
+}
+
 .welcome {
     align-self: center;
     margin: 10px;
@@ -68,13 +75,13 @@ img {
     align-self: center;
     display: flex;
     flex-direction: column;
-    border: 1px solid #f7931e;
+    border: 3px solid #51710a;
     border-radius: 15px;
     padding: 10px;
 }
 
 .signatures {
-    border: 1px solid #f05a28;
+    border: 3px solid #51710a;
     padding: 20px;
     background-color: #fff0bc;
 }
@@ -121,7 +128,7 @@ li::before {
 
 button {
     background: #fff0bc;
-    border: 2px solid #f7931e;
+    border: 2px solid #51710a;
     border-radius: 15px;
     font-size: 1.2em;
     cursor: pointer;
