@@ -20,10 +20,6 @@ body {
     justify-content: space-between;
 }
 
-main {
-    display: flex;
-}
-
 header {
     height: 70px;
 }
@@ -56,12 +52,6 @@ footer {
 img {
     height: 150px;
     width: 500px;
-}
-
-.leaf {
-    height: auto;
-    width: 50%;
-    align-self: center;
 }
 
 .welcome {

@@ -4,12 +4,12 @@
 </div>
 
 <form class="registration" method="post">
-    <p id="error">Something went wrong. Please try again</p><br>
+    <p id="error">Something went wrong. Please try again</p>
     <p>{{error}}</p>
-    E-mail <br>
-    <input type="email" name="email" required> <br>
-    Password <br>
-    <input type="password" name="password" required> <br>
+    E-mail
+    <input type="email" name="email" required>
+    Password
+    <input type="password" name="password" required>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <button type="submit" name="button" id="submit">LOG IN</button>
 </form>
