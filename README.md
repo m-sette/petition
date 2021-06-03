@@ -15,4 +15,4 @@ It is also needed to *createdb* with postgres and create tables as the examples 
 $ createdb petition
 [user@user sql]$ psql -d petition -f user_profiles.sql
 ```
-![signature]("./sign.png" "Signature")
+![signature](./sign.png "Signature")
