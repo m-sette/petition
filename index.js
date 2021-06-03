@@ -23,7 +23,7 @@ app.use(express.static("./public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(
     cookieSession({
-        secret: `I'm always angry.`,
+        secret: `I'm always angry.`, // secrets to be added on .env for production
         maxAge: 1000 * 60 * 60 * 24 * 14
     })
 );
